@@ -1,19 +1,28 @@
 const db = require("../models");
 const User = db.user;
+const bcrypt = require('bcryptjs')
 
 exports.create = (req, res) => {
+
+  if (!req.body.email || !req.body.password) {
+    res.json({ sucess: false, error: 'Parameters missing' })
+    return
+  }
+
   const user = new User({
     _id: req.body._id,
     username: req.body.username,
-    password: req.body.password,
+    email: req.body.email,
+    password: bcrypt.hashSync(req.body.password, 10),
     name: req.body.name,
     surname: req.body.surname,
     image: req.body.image,
     birthDate: req.body.birthDate
   });
 
-  user.save(user).then(data => {
-    res.send(data);
+  user.save(user).then(user => {
+    //const token = JsonWebToken.sign({ _id: user._id, email: user.email }, SECRET_JWT_CODE)
+    res.json({ sucess: true })
   }).catch(err => {
     res.status(500).send({
       message:

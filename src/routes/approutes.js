@@ -1,11 +1,10 @@
 module.exports = app => {
-  const ensureAuth = require('../middlewares/ensureAuth.js')
   const reservation = require("../controllers/ReservationController.js");
+  
   const user = require("../controllers/UserController.js");
   const hotel = require("../controllers/HotelController.js");
   const room = require("../controllers/RoomController.js");
-  const citty = require ("../controllers/CittyController.js");
-  const country = require("../controllers/CountryController.js");
+  const auth = require("../controllers/AuthController.js");
   const router = require("express").Router();
 
   //falta acrescentar o middleware ensureAuth às respetivas rotas
@@ -16,6 +15,8 @@ module.exports = app => {
   router.get("/user", user.findOne);
   router.patch("/user", user.update);
   router.delete("/user", user.delete);
+  router.post("/login", auth.post);
+  router.get("/getprofile", auth.get);
 
   //rooms
 
