@@ -6,8 +6,14 @@ module.exports = mongoose => {
           type: String,
           unique: true
       },
-      name: String,
-      surname: String,
+      adress: {
+        type: String,
+        default: 'Portugal'
+      },
+      phone_number: {
+        type: Number,
+        default: null
+      },
       email: {
           type: String,
           unique: true

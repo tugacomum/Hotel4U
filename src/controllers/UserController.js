@@ -13,10 +13,8 @@ exports.create = (req, res) => {
     _id: req.body._id,
     username: req.body.username,
     email: req.body.email,
+    phone_number: req.body.phone_number,
     password: bcrypt.hashSync(req.body.password, 10),
-    name: req.body.name,
-    surname: req.body.surname,
-    image: req.body.image,
     birthDate: req.body.birthDate
   });
 
