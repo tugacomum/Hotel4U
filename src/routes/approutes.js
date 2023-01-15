@@ -16,6 +16,7 @@ module.exports = app => {
   router.patch("/user", user.update);
   router.delete("/user", user.delete);
   router.post("/login", auth.post);
+  router.post("/sendmail", auth.sendMail);
   router.get("/getprofile", auth.get);
 
   //rooms
@@ -39,6 +40,7 @@ module.exports = app => {
   router.patch("/hotel", hotel.update);
   router.delete("/hotel", hotel.delete);
   router.get("/hotels", hotel.findAll);
+  
 
   //citty 
 
