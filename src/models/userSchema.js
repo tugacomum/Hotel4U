@@ -3,8 +3,8 @@ module.exports = mongoose => {
     {
       _id: Number,
       username: {
-          type: String,
-          unique: true
+        type: String,
+        unique: true
       },
       adress: {
         type: String,
@@ -15,27 +15,29 @@ module.exports = mongoose => {
         default: null
       },
       email: {
-          type: String,
-          unique: true
+        type: String,
+        unique: true
       },
       password: String,
       image: {
-          type: String,
-          default: null
+        type: String,
+        default: null
       },
       isAdmin: {
-          type: Boolean,
-          default: false
+        type: Boolean,
+        default: false
       },
-      isActive: {
-          type: Boolean,
-          default: true
+      verifyEmailCode: Number,
+      emailVerified: {
+        type: Boolean,
+        default: false
       },
+      passwordRecoveryCode: Number,
       birthDate: {
-          type: Date,
-          default: null
+        type: Date,
+        default: null
       }
-  },
+    },
     { timestamps: true, versionKey: false }
   );
 

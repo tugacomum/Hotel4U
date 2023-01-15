@@ -1,25 +1,32 @@
 const db = require("../models");
 const User = db.user;
-const bcrypt = require('bcryptjs')
+const Auth = require('./AuthController');
+const bcrypt = require('bcryptjs');
 
 exports.create = (req, res) => {
-
-  if (!req.body.email || !req.body.password) {
+  if (!req.body.email || !req.body.password || !req.body.username) {
     res.json({ sucess: false, error: 'Parameters missing' })
     return
   }
+
+  const code = Math.floor(Math.random() * (999_999 - 100_000 + 1)) + 100_000;
 
   const user = new User({
     _id: req.body._id,
     username: req.body.username,
     email: req.body.email,
     phone_number: req.body.phone_number,
+    verifyEmailCode: code,
     password: bcrypt.hashSync(req.body.password, 10),
     birthDate: req.body.birthDate
   });
 
+  const title = 'Verify your account on Hotel4U'
+  const message = 'Use the following code on app: ' + code.toString();
+
+  Auth.sendMail(req.body.email, title, message);
+
   user.save(user).then(user => {
-    //const token = JsonWebToken.sign({ _id: user._id, email: user.email }, SECRET_JWT_CODE)
     res.json({ sucess: true })
   }).catch(err => {
     res.status(500).send({

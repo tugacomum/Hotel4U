@@ -5,25 +5,6 @@ const SECRET_JWT_CODE = "psmR3Hu0ihHKfqZymo1m"
 const JsonWebToken = require('jsonwebtoken')
 var nodemailer = require('nodemailer')
 
-exports.post = (req, res) => {
-    User.findOne({ username: req.body.username })
-        .then((user) => {
-            if (!user) {
-                res.json({ sucess: false, error: 'User does not exists' })
-            } else {
-                if (!bcrypt.compareSync(req.body.password, user.password)) {
-                    res.json({ sucess: false, error: 'Wrong password' })
-                } else {
-                    const token = JsonWebToken.sign({ _id: user._id, username: user.username }, SECRET_JWT_CODE)
-                    res.json({ sucess: true, token: token, user: user })
-                }
-            }
-        })
-        .catch((err) => {
-            res.json({ sucess: false, error: err })
-        })
-}
-
 exports.get = (req, res) => {
     fetchUserByToken(req).then((user) => {
         res.status(200).json({ user })
@@ -52,23 +33,23 @@ function fetchUserByToken(req) {
     })
 }
 
-exports.sendMail = (req, res) => {
+exports.sendMail = (email, title, message, req, res) => {
     var transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
         port: 465,
         secure: true,
         service: 'gmail',
         auth: {
-            user: 'hotel.for.you.official@gmail.com',
-            pass: 'txslzggwazgvkflk'
+            user: 'software.for.you.official@gmail.com',
+            pass: 'ojhwhsvwidjgfrsm'
         }
     });
 
     var mailOptions = {
         from: 'Hotel4U <noreply@hotel4u.pt>',
-        to: 'internetsoundseasy@gmail.com',
-        subject: 'Sending Email using Node.js',
-        text: 'That was easy!'
+        to: email,
+        subject: title,
+        text: message
     };
 
     transporter.sendMail(mailOptions, function (error, info) {
@@ -78,4 +59,49 @@ exports.sendMail = (req, res) => {
             res.status(200).json({ sucess: true })
         }
     });
+}
+
+exports.verify = (req, res) => {
+    const filter = { username: req.body.username };
+    const update = { emailVerified: true, verifyEmailCode: null };
+    User.findOne(filter).then((user) => {
+        if (!user) {
+            res.status(400).json({ sucess: false, error: 'User does not exists' })
+        } else if (req.body.code !== user.verifyEmailCode) {
+            res.status(400).json({ sucess: false, error: 'Code does not match' })
+        } else {
+            User.findByIdAndUpdate(user._id, update)
+                .then(data => {
+                    if (!data) {
+                        res.status(404).send({
+                            message: `Cannot update User with id ${_id}. User not found!`
+                        });
+                    } else res.send({ message: "User was updated successfully." });
+                })
+                .catch(err => {
+                    res.status(500).send({
+                        message: "Error updating User with id " + _id
+                    });
+                });
+        }
+    })
+}
+
+exports.post = (req, res) => {
+    User.findOne({ username: req.body.username })
+        .then((user) => {
+            if (!user) {
+                res.json({ sucess: false, error: 'User does not exists' })
+            } else {
+                if (!bcrypt.compareSync(req.body.password, user.password)) {
+                    res.json({ sucess: false, error: 'Wrong password' })
+                } else {
+                    const token = JsonWebToken.sign({ _id: user._id, username: user.username }, SECRET_JWT_CODE)
+                    res.json({ sucess: true, token: token, user: user })
+                }
+            }
+        })
+        .catch((err) => {
+            res.json({ sucess: false, error: err })
+        })
 }

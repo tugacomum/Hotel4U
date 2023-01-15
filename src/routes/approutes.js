@@ -18,6 +18,7 @@ module.exports = app => {
   router.post("/login", auth.post);
   router.post("/sendmail", auth.sendMail);
   router.get("/getprofile", auth.get);
+  router.post("/verify", auth.verify);
 
   //rooms
 
