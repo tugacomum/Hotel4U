@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs')
 const SECRET_JWT_CODE = "psmR3Hu0ihHKfqZymo1m"
 const JsonWebToken = require('jsonwebtoken')
 var nodemailer = require('nodemailer')
+import { AppError } from '../errors/AppError';
 
 exports.get = (req, res) => {
     fetchUserByToken(req).then((user) => {
@@ -66,9 +67,9 @@ exports.verify = (req, res) => {
     const update = { emailVerified: true, verifyEmailCode: null };
     User.findOne(filter).then((user) => {
         if (!user) {
-            res.status(400).json({ sucess: false, error: 'User does not exists' })
+            throw new AppError('User does not exists')
         } else if (req.body.code !== user.verifyEmailCode) {
-            res.status(400).json({ sucess: false, error: 'Code does not match' })
+            throw new AppError('Code does not match')
         } else {
             User.findByIdAndUpdate(user._id, update)
                 .then(data => {
@@ -91,10 +92,10 @@ exports.post = (req, res) => {
     User.findOne({ username: req.body.username })
         .then((user) => {
             if (!user) {
-                res.json({ sucess: false, error: 'User does not exists' })
+                throw new AppError('User does not exists')
             } else {
                 if (!bcrypt.compareSync(req.body.password, user.password)) {
-                    res.json({ sucess: false, error: 'Wrong password' })
+                    throw new AppError('Wrong password')
                 } else {
                     const token = JsonWebToken.sign({ _id: user._id, username: user.username }, SECRET_JWT_CODE)
                     res.json({ sucess: true, token: token, user: user })
