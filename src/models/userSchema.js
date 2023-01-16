@@ -30,9 +30,12 @@ module.exports = mongoose => {
           type: Boolean,
           default: false
       },
-      isActive: {
-          type: Boolean,
-          default: true
+      verifyEmailCode: {
+        type: Number
+      },
+      emailVerified: {
+        type: Boolean,
+        default: false
       },
       birthDate: {
           type: Date,
