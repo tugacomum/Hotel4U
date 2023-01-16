@@ -27,6 +27,7 @@ exports.create = async (req, res) => {
     _id: _id,
     username: req.body.username,
     email: req.body.email,
+    adress: req.body.adress,
     phone_number: req.body.phone_number,
     verifyEmailCode: code,
     password: bcrypt.hashSync(req.body.password, 10),
