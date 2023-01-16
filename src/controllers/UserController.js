@@ -2,8 +2,9 @@ const db = require("../models");
 const User = db.user;
 const Auth = require('./AuthController');
 const bcrypt = require('bcryptjs');
+const IdIncrement = require('../shared/IdIncrement')
 
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
   if (!req.body.email || !req.body.password || !req.body.username) {
     res.json({ sucess: false, error: 'Parameters missing' })
     return
@@ -11,8 +12,19 @@ exports.create = (req, res) => {
 
   const code = Math.floor(Math.random() * (999_999 - 100_000 + 1)) + 100_000;
 
+  const ultimoId = await User.find({}).sort({ _id: -1 }).limit(1)
+  .then((result) => {
+      if (result[0] != undefined) {
+          return result[0]._id
+      } else {
+          return "U000"
+      }
+  })
+
+  const _id = IdIncrement(ultimoId)
+
   const user = new User({
-    _id: req.body._id,
+    _id: _id,
     username: req.body.username,
     email: req.body.email,
     phone_number: req.body.phone_number,
