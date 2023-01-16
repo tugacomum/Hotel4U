@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs')
 const SECRET_JWT_CODE = "psmR3Hu0ihHKfqZymo1m"
 const JsonWebToken = require('jsonwebtoken')
 var nodemailer = require('nodemailer')
-import { AppError } from '../errors/AppError';
+const AppError = require('../errors/AppError');
 
 exports.get = (req, res) => {
     fetchUserByToken(req).then((user) => {
