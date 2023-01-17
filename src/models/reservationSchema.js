@@ -1,10 +1,22 @@
 module.exports = mongoose => {
     var ReservationSchema = mongoose.Schema(
       {
-        _id: Number,
-        _idUser: Number,
-        _idHotel: Number,
-        _idRoom: Number,
+        _id: {
+          type: String,
+          unique: true
+        },
+        _idUser: {
+          type: String,
+          unique: true
+        },
+        _idHotel: {
+          type: String,
+          unique: true
+        },
+        _idRoom: {
+          type: String,
+          unique: true
+        },
         services: Boolean,
         price: Number,
         dayIn: {

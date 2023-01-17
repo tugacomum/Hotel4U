@@ -1,7 +1,10 @@
 module.exports = mongoose => {
     var CountrySchema = mongoose.Schema(
       {
-        _id: Number,
+        _id: {
+          type: String,
+          unique: true
+        },
     },
       { timestamps: true, versionKey: false }
     );

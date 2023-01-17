@@ -33,6 +33,10 @@ module.exports = mongoose => {
       verifyEmailCode: {
         type: Number
       },
+      passwordRecoveryCode: {
+        type: Number,
+        default: null
+      },
       emailVerified: {
         type: Boolean,
         default: false

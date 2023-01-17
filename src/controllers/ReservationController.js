@@ -1,9 +1,20 @@
 const db = require("../models");
 const Reservation = db.reservation;
+const IdIncrement = require('../shared/IdIncrement');
 
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
+    const ultimoId = await Reservation.find({}).sort({ _id: -1 }).limit(1)
+  .then((result) => {
+      if (result[0] != undefined) {
+          return result[0]._id
+      } else {
+          return "U000"
+      }
+  })
+
+  const _id = IdIncrement(ultimoId)
     const reservation = new Reservation({
-        _id: req.body._id,
+        _id: _id,
         _idUser: req.body._idUser,
         _idHotel: req.body._idHotel,
         _idRoom: req.body._idRoom,

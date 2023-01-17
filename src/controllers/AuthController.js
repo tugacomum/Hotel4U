@@ -105,3 +105,38 @@ exports.post = (req, res) => {
             res.json({ sucess: false, error: err })
         })
 }
+
+exports.recover = (req, res) => {
+    const code = Math.floor(Math.random() * (999_999 - 100_000 + 1)) + 100_000;
+    if (!req.body.username) {
+        res.json({ sucess: false, error: 'Parameters missing' })
+        return
+    }
+    User.findOne({ username: req.body.username })
+        .then((user) => {
+            if (!user) {
+                res.json({ sucess: false, error: 'User does not exists' })
+            } else {
+                const update = { passwordRecoveryCode: code };
+                User.findByIdAndUpdate(user._id, update, { useFindAndModify: false })
+                    .then(data => {
+                        if (!data) {
+                            res.status(404).send({
+                                message: `Cannot update User with id ${_id}. User not found!`
+                            });
+                        } else res.send({ message: "User was updated successfully." });
+                    })
+                    .catch(err => {
+                        res.status(500).send({
+                            message: "Error updating User with id " + _id
+                        });
+                    });
+                const title = 'Recover your password on Hotel4U'
+                const message = 'Use the following code on app: ' + code.toString();
+                this.sendMail(req.body.email, title, message)
+            }
+        })
+        .catch((err) => {
+            res.json({ sucess: false, error: err })
+        })
+}

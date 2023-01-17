@@ -1,8 +1,14 @@
 module.exports = mongoose => {
     var RoomSchema = mongoose.Schema(
       {
-        _id: Number,
-        _idHotel: Number,
+        _id: {
+          type: String,
+          unique: true
+        },
+        _idHotel: {
+          type: String,
+          unique: true
+        },
         roomQuantity: Number,
         state: Boolean,
         floor: Number,
