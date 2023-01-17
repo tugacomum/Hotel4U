@@ -40,8 +40,8 @@ exports.sendMail = (email, title, message, req, res) => {
         secure: true,
         service: 'gmail',
         auth: {
-            user: 'software.for.you.official@gmail.com',
-            pass: 'ojhwhsvwidjgfrsm'
+            user: 'softw.for.u@gmail.com',
+            pass: 'yigepmttbedijeyr'
         }
     });
 
@@ -59,6 +59,34 @@ exports.sendMail = (email, title, message, req, res) => {
             res.status(200).json({ sucess: true })
         }
     });
+}
+
+exports.recover = (req, res) => {
+    const filter = { username: req.body.username };
+    const update = { passwordRecoveryCode: null, password: bcrypt.hashSync(req.body.password, 10), };
+    if (!req.body.password || !req.body.username || !req.body.code) {
+        res.json({ sucess: false, error: 'Parameters missing' })
+        return
+    }
+    User.findOne(filter).then((user) => {
+        if (!user) {
+            res.json({ sucess: false, error: 'User does not exists' })
+        } else if (req.body.code !== user.passwordRecoveryCode) {
+            res.status(400).json({ sucess: false, error: 'Code does not match' })
+        } else {
+            User.findByIdAndUpdate(user._id, update).then(data => {
+                if (!data) {
+                    res.status(404).send({
+                        message: `Cannot update User with id ${_id}. User not found!`
+                    });
+                } else res.send({ message: "User was updated successfully." });
+            }).catch(err => {
+                res.status(500).send({
+                    message: "Error updating User with id " + _id
+                });
+            })
+        }
+    })
 }
 
 exports.verify = (req, res) => {
@@ -106,7 +134,7 @@ exports.post = (req, res) => {
         })
 }
 
-exports.recover = (req, res) => {
+exports.recoverSend = (req, res) => {
     const code = Math.floor(Math.random() * (999_999 - 100_000 + 1)) + 100_000;
     if (!req.body.username) {
         res.json({ sucess: false, error: 'Parameters missing' })
@@ -133,7 +161,7 @@ exports.recover = (req, res) => {
                     });
                 const title = 'Recover your password on Hotel4U'
                 const message = 'Use the following code on app: ' + code.toString();
-                this.sendMail(req.body.email, title, message)
+                this.sendMail(user.email, title, message);
             }
         })
         .catch((err) => {

@@ -19,6 +19,7 @@ module.exports = app => {
   router.post("/sendmail", auth.sendMail);
   router.get("/getprofile", auth.get);
   router.post("/verify", auth.verify);
+  router.post("/recoversend", auth.recoverSend);
   router.post("/recover", auth.recover);
 
   //rooms

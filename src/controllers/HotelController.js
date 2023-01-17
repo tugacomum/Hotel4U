@@ -17,6 +17,7 @@ exports.create = async (req, res) => {
         _id: _id,
         name: req.body.name,
         cittyId: req.body.cittyId,
+        location: req.body.location,
         description: req.body.description,
         image: req.body.image
     });
@@ -97,5 +98,3 @@ exports.update = (req, res) => {
             });
         });
 };
-
-// Encontrar todos os hotéis
