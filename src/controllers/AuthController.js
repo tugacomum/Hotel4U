@@ -62,9 +62,9 @@ exports.sendMail = (email, title, message, req, res) => {
 }
 
 exports.recover = (req, res) => {
-    const filter = { username: req.body.username };
+    const filter = { email: req.body.email };
     const update = { passwordRecoveryCode: null, password: bcrypt.hashSync(req.body.password, 10), };
-    if (!req.body.password || !req.body.username || !req.body.code) {
+    if (!req.body.password || !req.body.email || !req.body.code) {
         res.json({ sucess: false, error: 'Parameters missing' })
         return
     }
@@ -136,11 +136,11 @@ exports.post = (req, res) => {
 
 exports.recoverSend = (req, res) => {
     const code = Math.floor(Math.random() * (999_999 - 100_000 + 1)) + 100_000;
-    if (!req.body.username) {
+    if (!req.body.email) {
         res.json({ sucess: false, error: 'Parameters missing' })
         return
     }
-    User.findOne({ username: req.body.username })
+    User.findOne({ email: req.body.email })
         .then((user) => {
             if (!user) {
                 res.json({ sucess: false, error: 'User does not exists' })
