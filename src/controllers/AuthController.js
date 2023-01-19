@@ -3,6 +3,7 @@ const User = db.user;
 const bcrypt = require('bcryptjs')
 const SECRET_JWT_CODE = "psmR3Hu0ihHKfqZymo1m"
 const JsonWebToken = require('jsonwebtoken')
+
 var nodemailer = require('nodemailer')
 
 exports.get = (req, res) => {

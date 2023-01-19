@@ -1,8 +1,10 @@
 const db = require("../models");
 const User = db.user;
+const Image = db.image;
 const Auth = require('./AuthController');
 const bcrypt = require('bcryptjs');
 const IdIncrement = require('../shared/IdIncrement')
+const multer = require('multer')
 
 exports.create = async (req, res) => {
   if (!req.body.email || !req.body.password || !req.body.username) {
@@ -105,3 +107,34 @@ exports.update = (req, res) => {
       });
     });
 };
+
+const Storage = multer.diskStorage({
+  destination:'uploads',
+  filename: (req,file,cb) => { 
+    cb(null, file.originalname);
+  }
+})
+
+const upload = multer({
+  storage: Storage
+}).single('testImage')
+
+exports.getUpload = (req, res) => { 
+
+}
+
+exports.postUpload = (req, res) => { 
+  upload(req, res, (err)=> {
+    if (err) console.log(err)
+    else {
+      const newImage = new Image({
+        name: req.body.name,
+        image: {
+          data: req.file.filename,
+          contentType: 'image/png'
+        }
+      })
+      newImage.save().then(()=>res.send('successfully uploaded')).catch(err => console.log(err));
+    }
+  })
+}

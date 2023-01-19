@@ -21,6 +21,8 @@ module.exports = app => {
   router.post("/verify", auth.verify);
   router.post("/recoversend", auth.recoverSend);
   router.post("/recover", auth.recover);
+  router.post("/upload", user.postUpload);
+  router.get("/upload", user.getUpload)
 
   //rooms
 
