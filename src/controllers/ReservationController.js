@@ -1,47 +1,93 @@
 const db = require("../models");
 const Reservation = db.reservation;
+const Hotel = db.hotel;
 const IdIncrement = require('../shared/IdIncrement');
 
 exports.create = async (req, res) => {
     const ultimoId = await Reservation.find({}).sort({ _id: -1 }).limit(1)
-  .then((result) => {
-      if (result[0] != undefined) {
-          return result[0]._id
-      } else {
-          return "U000"
-      }
-  })
+        .then((result) => {
+            if (result[0] != undefined) {
+                return result[0]._id
+            } else {
+                return "U000"
+            }
+        })
 
     const _id = IdIncrement(ultimoId)
-    const reservation = new Reservation({
-        _id: _id,
-        _idUser: req.body._idUser,
-        _idHotel: req.body._idHotel,
-        _idRoom: req.body._idRoom,
-        services: req.body.services,
-        dayIn: req.body.dayIn,
-        dayOut: req.body.dayOut,
-        state: req.body.state
-    });
 
-    reservation.save(reservation).then(data => {
-        res.send(data);
-    }).catch(err => {
-        res.status(500).send({
-            message:
-                err.message || "Error: Something failed trying to create the reservation."
-        });
-    });
+    var date1 = new Date(req.body.dayIn);
+    var date2 = new Date(req.body.dayOut);
+
+    const _idHotel = req.body._idHotel;
+    const _idUser = req.body._idUser;
+
+    const hotel = await Hotel.findById({ _id: _idHotel });
+
+
+
+    //verificar se o dayin e maior ou igual que o dayin da bd e verificar se o dayout e maior que o dayin
+
+    Reservation.find({ _idUser: req.body._idUser }).then(data => {
+        if (data) {
+            if (isBetweenDates(data[0].dayIn.getTime(), data[0].dayOut.getTime(), date1.getTime())) {
+                res.status(500).json({ error: "User made one reservation on that date already" })
+                return
+            } else if (compareDates(date1, date2)) {
+                res.status(500).json({ error: "Day out not valid. You need to stay at least one night at the hotel" })
+            } else {
+                var Difference_In_Time = date2 - date1;
+                const Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
+                var reservationprice; var state;
+
+                if (req.body.services == true) {
+                    var services_final_price = hotel.services_price * Difference_In_Days;
+                    var hotel_final_price = hotel.price * Difference_In_Days;
+                    reservationprice = hotel_final_price + services_final_price;
+                } else {
+                    reservationprice = hotel.price * Difference_In_Days;
+                }
+
+                if (req.body.state) {
+                    state = true
+                } else state = false
+
+                const reservation = new Reservation({
+                    _id: _id,
+                    _idUser: _idUser,
+                    _idHotel: _idHotel,
+                    services: req.body.services,
+                    price: reservationprice,
+                    dayIn: date1,
+                    dayOut: date2,
+                    state: state
+                });
+
+                reservation.save(reservation).then(data => {
+                    res.send(data);
+                }).catch(err => {
+                    res.status(500).send({
+                        message:
+                            err.message || "Error: Something failed trying to create the reservation."
+                    });
+                });
+            }
+        }
+    })
+
+
 };
 
-exports.findOne = (req, res) => {
-    const _id = req.body._id;
-    Reservation.findById(_id).then(data => {
+exports.findAllByUser = (req, res) => {
+    if (!req.body._idUser) {
+        res.status(400).json({ error: "error" })
+        return
+    }
+    Reservation.find({ _idUser: req.body._idUser }).then(data => {
         if (!data)
-            res.status(404).send({ message: "Reservation not found with id " + _id });
+            res.status(404).send({ message: "Reservations not found" });
         else res.send(data);
     }).catch(err => {
-        res.status(500).send({ message: "Error retrieving Reservation with id " + _id })
+        res.status(500).send({ message: "Error retrieving Reservations" });
     })
 };
 
@@ -90,3 +136,15 @@ exports.update = (req, res) => {
             });
         });
 };
+
+function isBetweenDates(date1, date2, checkDate) {
+    return checkDate >= date1 && checkDate <= date2;
+}
+
+function compareDates(date1, date2) {
+    if (date1 >= date2) {
+        return true;
+    } else {
+        return false;
+    }
+}

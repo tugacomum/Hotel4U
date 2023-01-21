@@ -3,7 +3,6 @@ module.exports = app => {
   
   const user = require("../controllers/UserController.js");
   const hotel = require("../controllers/HotelController.js");
-  const room = require("../controllers/RoomController.js");
   const auth = require("../controllers/AuthController.js");
   const router = require("express").Router();
 
@@ -24,17 +23,10 @@ module.exports = app => {
   router.post("/upload", user.postUpload);
   router.get("/upload", user.getUpload)
 
-  //rooms
-
-  router.post("/room", room.create);
-  router.get("/room", room.findOne);
-  router.patch("/room", room.update);
-  router.delete("/room", room.delete);
-
   //reservations
 
   router.post("/reservation", reservation.create);
-  router.get("/reservation", reservation.findOne);
+  router.get("/reservation", reservation.findAllByUser);
   router.patch("/reservation", reservation.update);
   router.delete("/reservation", reservation.delete);
 

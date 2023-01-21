@@ -12,6 +12,11 @@ module.exports = mongoose => {
         rating_avg: {
           type: Number, 
           default: 5
+        },
+        count_reviews: Number,
+        price: Number,
+        services_price: {
+          type: Number,
         }
     },
       { timestamps: true, versionKey: false }

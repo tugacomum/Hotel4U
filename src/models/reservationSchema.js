@@ -7,29 +7,24 @@ module.exports = mongoose => {
         },
         _idUser: {
           type: String,
-          unique: true
+          unique: false
         },
         _idHotel: {
           type: String,
-          unique: true
+          unique: false
         },
-        _idRoom: {
-          type: String,
-          unique: true
+        services: {
+          type: Boolean,
         },
-        services: Boolean,
         price: Number,
         dayIn: {
             type: Date,
-            default: Date.now
         },
         dayOut: {
-            type: Date,
-            default: () => new Date(+new Date() + 7*24*60*60*1000)
+            type: Date
         },
         state: {
             type: Boolean,
-            default: true
         }
     },
       { timestamps: true, versionKey: false }

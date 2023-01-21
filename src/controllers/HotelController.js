@@ -16,9 +16,9 @@ exports.create = async (req, res) => {
     const hotel = new Hotel({
         _id: _id,
         name: req.body.name,
-        cittyId: req.body.cittyId,
         location: req.body.location,
         description: req.body.description,
+        price: req.body.price,
         image: req.body.image
     });
 

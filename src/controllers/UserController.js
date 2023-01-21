@@ -108,6 +108,10 @@ exports.update = (req, res) => {
     });
 };
 
+exports.getUpload = (req, res) => { 
+  
+}
+
 const Storage = multer.diskStorage({
   destination:'uploads',
   filename: (req,file,cb) => { 
@@ -118,10 +122,6 @@ const Storage = multer.diskStorage({
 const upload = multer({
   storage: Storage
 }).single('testImage')
-
-exports.getUpload = (req, res) => { 
-
-}
 
 exports.postUpload = (req, res) => { 
   upload(req, res, (err)=> {
