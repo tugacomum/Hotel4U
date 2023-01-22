@@ -23,17 +23,55 @@ exports.create = async (req, res) => {
 
     const hotel = await Hotel.findById({ _id: _idHotel });
 
-
-
-    //verificar se o dayin e maior ou igual que o dayin da bd e verificar se o dayout e maior que o dayin
-
     Reservation.find({ _idUser: req.body._idUser }).then(data => {
-        if (data) {
-            if (isBetweenDates(data[0].dayIn.getTime(), data[0].dayOut.getTime(), date1.getTime())) {
+        if (data.length > 0) {
+            console.log('teste')
+            if (isBetweenDates(data[0].dayIn, data[0].dayOut, date1)) {
                 res.status(500).json({ error: "User made one reservation on that date already" })
                 return
             } else if (compareDates(date1, date2)) {
                 res.status(500).json({ error: "Day out not valid. You need to stay at least one night at the hotel" })
+            } else {
+                var Difference_In_Time = date2 - date1;
+                const Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
+                var reservationprice; var state;
+
+                if (req.body.services == true) {
+                    var services_final_price = hotel.services_price * Difference_In_Days;
+                    var hotel_final_price = hotel.price * Difference_In_Days;
+                    reservationprice = hotel_final_price + services_final_price;
+                } else {
+                    reservationprice = hotel.price * Difference_In_Days;
+                }
+
+                if (req.body.state) {
+                    state = true
+                } else state = false
+
+                const reservation = new Reservation({
+                    _id: _id,
+                    _idUser: _idUser,
+                    _idHotel: _idHotel,
+                    services: req.body.services,
+                    price: reservationprice,
+                    dayIn: date1,
+                    dayOut: date2,
+                    state: state
+                });
+
+                reservation.save(reservation).then(data => {
+                    res.send(data);
+                }).catch(err => {
+                    res.status(500).send({
+                        message:
+                            err.message || "Error: Something failed trying to create the reservation."
+                    });
+                });
+            }
+        } else {
+            if (compareDates(date1, date2)) {
+                res.status(500).json({ error: "Day out not valid. You need to stay at least one night at the hotel" })
+                return
             } else {
                 var Difference_In_Time = date2 - date1;
                 const Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
