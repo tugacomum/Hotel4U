@@ -7,11 +7,12 @@ module.exports = mongoose => {
         },
         _idUser: {
           type: String,
-          unique: false
+        },
+        _idRoom: {
+          type: String
         },
         _idHotel: {
           type: String,
-          unique: false
         },
         services: {
           type: Boolean,

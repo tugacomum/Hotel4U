@@ -24,7 +24,6 @@ exports.create = async (req, res) => {
         type_room: req.body.type_room,
         description: req.body.description
     });
-    l
 
     room.save(room).then(data => {
         res.send(data);
@@ -94,5 +93,11 @@ exports.update = (req, res) => {
 };
 
 exports.findByHotelId = (req, res) => {
-    Room.find({ _idHotel: req.body._idHotel }).then(res => console.log(res))
+    Room.find({ _idHotel: req.body._idHotel }).then(data => {
+        if (!data) {
+            res.status(404).send({ 
+                message: `No rooms found for that hotel`
+            });
+        } else res.status(200).json(data)
+    })
 }

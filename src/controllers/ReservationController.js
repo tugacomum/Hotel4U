@@ -25,7 +25,6 @@ exports.create = async (req, res) => {
 
     Reservation.find({ _idUser: req.body._idUser }).then(data => {
         if (data.length > 0) {
-            console.log('teste')
             if (isBetweenDates(data[0].dayIn, data[0].dayOut, date1)) {
                 res.status(500).json({ error: "User made one reservation on that date already" })
                 return
@@ -52,13 +51,14 @@ exports.create = async (req, res) => {
                     _id: _id,
                     _idUser: _idUser,
                     _idHotel: _idHotel,
+                    _idRoom: "U001",
                     services: req.body.services,
                     price: reservationprice,
                     dayIn: date1,
                     dayOut: date2,
                     state: state
                 });
-
+                
                 reservation.save(reservation).then(data => {
                     res.send(data);
                 }).catch(err => {
@@ -93,6 +93,7 @@ exports.create = async (req, res) => {
                     _id: _id,
                     _idUser: _idUser,
                     _idHotel: _idHotel,
+                    _idRoom: req.body._idRoom,
                     services: req.body.services,
                     price: reservationprice,
                     dayIn: date1,
