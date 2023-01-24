@@ -15,11 +15,13 @@ exports.create = async (req, res) => {
   const _id = IdIncrement(ultimoId)
     const hotel = new Hotel({
         _id: _id,
+        price: req.body.price,
+        services_price: req.body.services_price,
         name: req.body.name,
         location: req.body.location,
         description: req.body.description,
-        price: req.body.price,
-        image: req.body.image
+        count_reviews: req.body.count_reviews,
+        image: req.body.image,
     });
 
     hotel.save(hotel).then(data => {

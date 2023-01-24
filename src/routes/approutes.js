@@ -4,6 +4,7 @@ module.exports = app => {
   const user = require("../controllers/UserController.js");
   const hotel = require("../controllers/HotelController.js");
   const auth = require("../controllers/AuthController.js");
+  const room = require("../controllers/RoomController.js");
   const router = require("express").Router();
 
   //falta acrescentar o middleware ensureAuth às respetivas rotas
@@ -38,12 +39,13 @@ module.exports = app => {
   router.delete("/hotel", hotel.delete);
   router.get("/hotels", hotel.findAll);
   
-
-  //citty 
-
-  //country
-
-  //rating
+  //rooms
+  
+  router.post("/room", room.create);
+  router.get("/room", room.findOne);
+  router.get("/allrooms", room.findByHotelId);
+  router.delete("/room", room.delete);
+  router.patch("/room", room.update);
 
   app.use("", router);
 };
