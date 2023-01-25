@@ -117,7 +117,7 @@ exports.verify = (req, res) => {
 }
 
 exports.post = (req, res) => {
-    User.findOne({ username: req.body.username })
+    User.findOne({ email: req.body.email })
         .then((user) => {
             if (!user) {
                 res.json({ sucess: false, error: 'User does not exists' })
