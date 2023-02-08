@@ -12,10 +12,11 @@ module.exports = app => {
   //users
 
   router.post("/user", user.create);
-  router.get("/user", user.findOne);
+  router.get("/user/:id", user.findOne);
   router.get("/users", user.find);
-  router.patch("/user", user.update);
-  router.delete("/user", user.delete);
+  router.patch("/user/:id", user.update);
+  router.delete("/user/:id", user.delete);
+
   router.post("/login", auth.post);
   router.get("/getprofile", auth.get);
 
@@ -27,25 +28,25 @@ module.exports = app => {
   router.get("/reservation", reservation.find);
   router.get("/reservation/hotel/:_idHotel", reservation.findByHotelId);
   router.get("/reservation/user/:_idUser", reservation.findAllByUser);
-  router.patch("/reservation", reservation.update);
-  router.delete("/reservation", reservation.delete);
+  router.patch("/reservation/:id", reservation.update);
+  router.delete("/reservation/:id", reservation.delete);
 
   //hotels
 
   router.post("/hotel", hotel.create);
-  router.get("/hotel", hotel.findOne);
-  router.patch("/hotel", hotel.update);
-  router.delete("/hotel", hotel.delete);
+  router.get("/hotel/:id", hotel.findOne);
+  router.patch("/hotel/:id", hotel.update);
+  router.delete("/hotel/:id", hotel.delete);
   router.get("/hotels", hotel.findAll);
   
   //rooms
   
   router.post("/room", room.create);
-  router.get("/room", room.findOne);
-  router.get("/allrooms", room.findByHotelId);
+  router.get("/room/:id", room.findOne);
+  router.get("/allrooms/:hotel_id", room.findByHotelId);
   router.get("/rooms", room.find)
-  router.delete("/room", room.delete);
-  router.patch("/room", room.update);
+  router.delete("/room/:id", room.delete);
+  router.patch("/room/:id", room.update);
 
   app.use("", router);
 };

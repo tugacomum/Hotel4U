@@ -48,7 +48,7 @@ exports.create = async (req, res) => {
 };
 
 exports.findByHotelId = (req, res) => {
-  Reservation.find({ _idHotel: req.params._idHotel })
+  Reservation.find({ hotel_id: req.params.hotel_id })
     .then((result) => {
       if (result != null) {
         return res.status(200).send(result);
@@ -61,13 +61,13 @@ exports.findByHotelId = (req, res) => {
         .status(500)
         .send(
           err ||
-          "Erro devolvendo as reservas do hotel Id:" + req.params._idHotel
+          "Erro devolvendo as reservas do hotel Id:" + req.params.hotel_id
         );
     });
 }
 
 exports.findAllByUser = (req, res) => {
-  Reservation.find({ _idUser: req.params._idUser })
+  Reservation.find({ utilizador_id: req.params.utilizador_id })
     .then((result) => {
       if (result != null) {
         return res.status(200).send(result);
@@ -76,7 +76,7 @@ exports.findAllByUser = (req, res) => {
       }
     })
     .catch((err) => {
-      return res.status(500).send(err || "Erro devolvendo as reservas do utilizador Id:" + req.params._idUser);
+      return res.status(500).send(err || "Erro devolvendo as reservas do utilizador Id:" + req.params.utilizador_id);
     });
 };
 

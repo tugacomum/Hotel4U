@@ -78,7 +78,7 @@ exports.update = (req, res) => {
 };
 
 exports.findByHotelId = (req, res) => {
-    Room.find({_idHotel: req.params._idHotel}).then((result) => {
+    Room.find({hotel_id: req.params.hotel_id}).then((result) => {
         if (result != null) {
             return res.status(200).send(result)
         } else {
