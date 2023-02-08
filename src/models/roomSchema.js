@@ -9,8 +9,9 @@ module.exports = mongoose => {
         type: String
       },
       roomQuantity: Number,
-      state: Boolean,
-      floor: Number,
+      available: {
+        type: Boolean
+      },
       type_room: {
         type: String,
         default: null
@@ -18,6 +19,12 @@ module.exports = mongoose => {
       description: {
         type: String,
         default: null
+      },
+      price: {
+        type: Number
+      },
+      servicos: {
+        type: [String]
       }
     },
     { timestamps: true, versionKey: false }

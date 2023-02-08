@@ -1,10 +1,7 @@
 const db = require("../models");
 const User = db.user;
-const Image = db.image;
-const Auth = require('./AuthController');
 const bcrypt = require('bcryptjs');
 const IdIncrement = require('../shared/IdIncrement')
-const multer = require('multer')
 
 exports.create = async (req, res) => {
   if (!req.body.email || !req.body.password || !req.body.username) {
@@ -12,16 +9,14 @@ exports.create = async (req, res) => {
     return
   }
 
-  const code = Math.floor(Math.random() * (999_999 - 100_000 + 1)) + 100_000;
-
   const ultimoId = await User.find({}).sort({ _id: -1 }).limit(1)
-  .then((result) => {
+    .then((result) => {
       if (result[0] != undefined) {
-          return result[0]._id
+        return result[0]._id
       } else {
-          return "U000"
+        return "U000"
       }
-  })
+    })
 
   const _id = IdIncrement(ultimoId)
 
@@ -31,15 +26,9 @@ exports.create = async (req, res) => {
     email: req.body.email,
     adress: req.body.adress,
     phone_number: req.body.phone_number,
-    verifyEmailCode: code,
     password: bcrypt.hashSync(req.body.password, 10),
     birthDate: req.body.birthDate
   });
-
-  const title = 'Verify your account on Hotel4U'
-  const message = 'Use the following code on app: ' + code.toString();
-
-  Auth.sendMail(req.body.email, title, message);
 
   user.save(user).then(user => {
     res.json({ sucess: true })
@@ -51,90 +40,48 @@ exports.create = async (req, res) => {
   });
 };
 
+exports.find = (req, res) => {
+  User.find({}).then(result => {
+    if (result != null) {
+      return res.status(200).send(result)
+    } else {
+      return res.status(404).send("Nada encontrado")
+    }
+  }).catch((err) => {
+    return res.status(500).send(err || "Erro devolvendo todos os utilizadores")
+  })
+}
+
 exports.findOne = (req, res) => {
-  const _id = req.body._id;
-  User.findById(_id).then(data => {
-    if (!data)
-      res.status(404).send({ message: "User not found with id " + _id });
-    else res.send(data);
-  }).catch(err => {
-    res.status(500).send({ message: "Error retrieving User with id " + _id })
+  User.findById(req.params._id).then(result => {
+    if (result != null) {
+      return res.status(200).send(result)
+    } else {
+      return res.status(404).send("Nada encontrado")
+    }
+
+  }).catch((err) => {
+    return res.status(500).send(err || "Erro retornando o utilizador Id:" + req.params._id)
   })
 };
 
 exports.delete = (req, res) => {
-  const _id = req.body._id;
+  User.findByIdAndDelete(req.params._id, { useFindAndModify: false }).then(() => {
+    return res.status(200).send("Utilizador excluído com sucesso")
+  }).catch((err) => {
+    console.log(err)
+    return res.status(500).send(err || "Erro ao eliminar o utilizador Id:" + _id)
 
-  User.findByIdAndRemove(_id, { useFindAndModify: false })
-    .then(data => {
-      if (!data) {
-        res.status(404).send({
-          message: `Cannot delete User with id ${_id}. User not found!`
-        });
-      } else {
-        res.send({
-          message: "User was deleted successfully!"
-        });
-      }
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Could not delete User with id " + _id
-      });
-    });
+  })
 };
 
 exports.update = (req, res) => {
   if (!req.body) {
-    return res.status(400).send({
-      message: "Data to update can not be empty!"
-    });
+    return res.status(400).send("Nada para fazer update");
   }
-
-  const _id = req.body._id;
-
-  User.findByIdAndUpdate(_id, req.body, { useFindAndModify: false })
-    .then(data => {
-      if (!data) {
-        res.status(404).send({
-          message: `Cannot update User with id ${_id}. User not found!`
-        });
-      } else res.send({ message: "User was updated successfully." });
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Error updating User with id " + _id
-      });
-    });
-};
-
-exports.getUpload = (req, res) => { 
-  
-}
-
-const Storage = multer.diskStorage({
-  destination:'uploads',
-  filename: (req,file,cb) => { 
-    cb(null, file.originalname);
-  }
-})
-
-const upload = multer({
-  storage: Storage
-}).single('testImage')
-
-exports.postUpload = (req, res) => { 
-  upload(req, res, (err)=> {
-    if (err) console.log(err)
-    else {
-      const newImage = new Image({
-        name: req.body.name,
-        image: {
-          data: req.file.filename,
-          contentType: 'image/png'
-        }
-      })
-      newImage.save().then(()=>res.send('successfully uploaded')).catch(err => console.log(err));
-    }
+  User.findByIdAndUpdate(req.params._id, req.body, { useFindAndModify: false }).then((result) => {
+    return res.status(200).send(result);
+  }).catch((err) => {
+    return res.status(500).send(err || "Erro guardando alterações ao utilizador Id:" + req.params._id)
   })
-}
+};

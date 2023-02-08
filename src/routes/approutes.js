@@ -13,21 +13,20 @@ module.exports = app => {
 
   router.post("/user", user.create);
   router.get("/user", user.findOne);
+  router.get("/users", user.find);
   router.patch("/user", user.update);
   router.delete("/user", user.delete);
   router.post("/login", auth.post);
-  router.post("/sendmail", auth.sendMail);
   router.get("/getprofile", auth.get);
-  router.post("/verify", auth.verify);
-  router.post("/recoversend", auth.recoverSend);
-  router.post("/recover", auth.recover);
-  router.post("/upload", user.postUpload);
-  router.get("/upload", user.getUpload)
+
 
   //reservations
 
   router.post("/reservation", reservation.create);
-  router.get("/reservation", reservation.findAllByUser);
+  router.get("/reservation/:id", reservation.findById);
+  router.get("/reservation", reservation.find);
+  router.get("/reservation/hotel/:_idHotel", reservation.findByHotelId);
+  router.get("/reservation/user/:_idUser", reservation.findAllByUser);
   router.patch("/reservation", reservation.update);
   router.delete("/reservation", reservation.delete);
 
@@ -44,6 +43,7 @@ module.exports = app => {
   router.post("/room", room.create);
   router.get("/room", room.findOne);
   router.get("/allrooms", room.findByHotelId);
+  router.get("/rooms", room.find)
   router.delete("/room", room.delete);
   router.patch("/room", room.update);
 

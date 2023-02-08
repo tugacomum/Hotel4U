@@ -17,29 +17,18 @@ module.exports = mongoose => {
         type: Number,
         default: null
       },
+      nif: {
+        type: Number,
+        unique: true
+      },
       email: {
           type: String,
           unique: true
       },
       password: String,
-      image: {
-          type: String,
-          default: null
-      },
       isAdmin: {
           type: Boolean,
           default: false
-      },
-      verifyEmailCode: {
-        type: Number
-      },
-      passwordRecoveryCode: {
-        type: Number,
-        default: null
-      },
-      emailVerified: {
-        type: Boolean,
-        default: false
       },
       birthDate: {
           type: Date,

@@ -14,18 +14,18 @@ module.exports = mongoose => {
         _idHotel: {
           type: String,
         },
-        services: {
-          type: Boolean,
-        },
         price: Number,
         dayIn: {
-            type: Date,
+            type: String,
         },
         dayOut: {
-            type: Date
+            type: String
         },
         state: {
-            type: Boolean,
+          type: String
+        },
+        count_ppl: {
+          type: Number
         }
     },
       { timestamps: true, versionKey: false }

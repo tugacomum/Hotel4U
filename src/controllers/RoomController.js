@@ -1,6 +1,5 @@
 const db = require("../models");
 const Room = db.room;
-const Hotel = db.hotel;
 const IdIncrement = require('../shared/IdIncrement');
 
 exports.create = async (req, res) => {
@@ -36,68 +35,55 @@ exports.create = async (req, res) => {
 };
 
 exports.findOne = (req, res) => {
-    const _id = req.body._id;
-    Room.findById(_id).then(data => {
-        if (!data)
-            res.status(404).send({ message: "Room not found with id " + _id });
-        else res.send(data);
-    }).catch(err => {
-        res.status(500).send({ message: "Error retrieving Room with id " + _id + " cuzinho" })
+    Room.findById(req.params.id).then((result) => {
+        if (result != null) {
+            return res.status(200).send(result)
+        } else {
+            return res.status(404).send("Nada encontrado")
+        }
+    }).catch((err) => {
+        return res.status(500).send(err || "Erro devolvendo o quarto com Id:" + req.params.id)
     })
 };
 
-exports.delete = (req, res) => {
-    const _id = req.body._id;
+exports.find = (req, res) => {
+    Room.find({}).then((result) => {
+        if (result != null) {
+            return res.status(200).send(result)
+        } else {
+            return res.status(404).send("Nada encontrado")
+        }
+    }).catch((err) => {
+        return res.status(500).send(err || "Erro devolvendo todos os Quartos")
+    })
+}
 
-    Room.findByIdAndRemove(_id, { useFindAndModify: false })
-        .then(data => {
-            if (!data) {
-                res.status(404).send({
-                    message: `Cannot delete Room with id ${_id}. Room not found!`
-                });
-            } else {
-                res.send({
-                    message: "Room was deleted successfully!"
-                });
-            }
-        })
-        .catch(err => {
-            res.status(500).send({
-                message: "Could not delete Room with id " + _id
-            });
-        });
+exports.delete = (req, res) => {
+    Room.findByIdAndDelete(req.params._id, { useFindAndModify: false }).then((result) => {
+        return res.status(200).send("Quarto excluído com sucesso")
+    }).catch((err) => {
+        console.log(err)
+        return res.status(500).send(err + " Erro ao eliminar o quarto Id:" + req.params._id)
+
+    })
 };
 
 exports.update = (req, res) => {
-    if (!req.body) {
-        return res.status(400).send({
-            message: "Data to update can not be empty!"
-        });
-    }
-
-    const _id = req.body._id;
-
-    Room.findByIdAndUpdate(_id, req.body, { useFindAndModify: false })
-        .then(data => {
-            if (!data) {
-                res.status(404).send({
-                    message: `Cannot update Room with id ${_id}. Room not found!`
-                });
-            } else res.send({ message: "Room was updated successfully." });
-        })
-        .catch(err => {
-            res.status(500).send({
-                message: "Error updating Room with id " + _id
-            });
-        });
+    Room.findByIdAndUpdate(req.params._id, req.body,{ useFindAndModify: false }).then(() => {
+        return res.status(200).send("quarto alterado")
+    }).catch((err) => {
+        return res.status(500).send(err || "Erro guardando alterações ao quarto Id:" + req.params._id)
+    })
 };
 
 exports.findByHotelId = (req, res) => {
-    Room.find({ _idHotel: req.body._idHotel }).then(data => {
-        if (!data) {
-            res.status(404).send({ 
-                message: `No rooms found for that hotel`
-            });
-        } else res.status(200).json(data)
+    Room.find({_idHotel: req.params._idHotel}).then((result) => {
+        if (result != null) {
+            return res.status(200).send(result)
+        } else {
+            return res.status(404).send("Nada encontrado")
+        }
+    }).catch((err) => {
+        return res.status(500).send(err || "Erro devolvendo os quartos do hotel Id:" + req.params.hotel_id)
     })
 }

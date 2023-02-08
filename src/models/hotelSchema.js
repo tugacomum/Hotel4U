@@ -8,15 +8,14 @@ module.exports = mongoose => {
         name: String,
         location: String,
         description: String,
-        image: String,
-        rating_avg: {
-          type: Number, 
-          default: 5
+        image: {
+          type: [String]
         },
-        count_reviews: Number,
-        price: Number,
-        services_price: {
-          type: Number,
+        available: {
+          type: Boolean
+        },
+        services: {
+          type: [String],
         }
     },
       { timestamps: true, versionKey: false }
