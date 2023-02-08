@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const IdIncrement = require('../shared/IdIncrement')
 
 exports.create = async (req, res) => {
-  if (!req.body.email || !req.body.password || !req.body.username) {
+  if (!req.body.email || !req.body.password) {
     res.json({ sucess: false, error: 'Parameters missing' })
     return
   }
