@@ -4,168 +4,54 @@ const bcrypt = require('bcryptjs')
 const SECRET_JWT_CODE = "psmR3Hu0ihHKfqZymo1m"
 const JsonWebToken = require('jsonwebtoken')
 
-var nodemailer = require('nodemailer')
-
 exports.get = (req, res) => {
-    fetchUserByToken(req).then((user) => {
-        res.status(200).json({ user })
-    }).catch((err) => {
-        //token not valid
-        res.status(400).json({ sucess: false })
+    encontrarUserPorToken(req).then((user)=>{
+        return res.status(200).send(user)
+    }).catch((err)=>{
+        return res.status(500).send(err)
     })
 }
 
-function fetchUserByToken(req) {
-    return new Promise((resolve, reject) => {
-        if (req.headers && req.headers.authorization) {
-            let authorization = req.headers.authorization
-            let decoded
-            try {
-                decoded = JsonWebToken.verify(authorization, SECRET_JWT_CODE)
-            } catch (e) {
-                reject("Token not valid")
-                return
+function encontrarUserPorToken(req){
+    return new Promise((resolve, reject)=>{
+        if(req.headers && req.headers.authorization){
+            let token = req.headers.authorization
+            let decode
+            try{
+                decode = JsonWebToken.verify(token, SECRET_JWT_CODE)
+            }catch(e){
+                 reject("Token inválido")
+                 return
             }
-            let userId = decoded._id
-            User.findOne({ _id: userId }).then((user) => { resolve(user) }).catch((err) => { reject("Token error") })
-        } else {
-            reject("No token found")
-        }
-    })
-}
-
-exports.sendMail = (email, title, message, req, res) => {
-    var transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 465,
-        secure: true,
-        service: 'gmail',
-        auth: {
-            user: 'softw.for.u@gmail.com',
-            pass: 'yigepmttbedijeyr'
-        }
-    });
-
-    var mailOptions = {
-        from: 'Hotel4U <noreply@hotel4u.pt>',
-        to: email,
-        subject: title,
-        text: message
-    };
-
-    transporter.sendMail(mailOptions, function (error, info) {
-        if (error) {
-            console.log(error);
-        } else {
-            res.status(200).json({ sucess: true })
-        }
-    });
-}
-
-exports.recover = (req, res) => {
-    const filter = { email: req.body.email };
-    const update = { passwordRecoveryCode: null, password: bcrypt.hashSync(req.body.password, 10), };
-    if (!req.body.password || !req.body.email || !req.body.code) {
-        res.json({ sucess: false, error: 'Parameters missing' })
-        return
-    }
-    User.findOne(filter).then((user) => {
-        if (!user) {
-            res.json({ sucess: false, error: 'User does not exists' })
-        } else if (req.body.code !== user.passwordRecoveryCode) {
-            res.status(400).json({ sucess: false, error: 'Code does not match' })
-        } else {
-            User.findByIdAndUpdate(user._id, update).then(data => {
-                if (!data) {
-                    res.status(404).send({
-                        message: `Cannot update User with id ${_id}. User not found!`
-                    });
-                } else res.send({ message: "User was updated successfully." });
-            }).catch(err => {
-                res.status(500).send({
-                    message: "Error updating User with id " + _id
-                });
+            let userId=decode._id
+            User.findById(userId).then((user)=>{
+                if(user){
+                    resolve(user)
+                }else{
+                    reject("Utilizador não encontrado")
+                }
+            }).catch((err)=>{
+                reject("Erro com o token")
             })
-        }
-    })
-}
-
-exports.verify = (req, res) => {
-    const filter = { username: req.body.username };
-    const update = { emailVerified: true, verifyEmailCode: null };
-    User.findOne(filter).then((user) => {
-        if (!user) {
-            res.status(400).json({ sucess: false, error: 'User does not exists' })
-        } else if (req.body.code !== user.verifyEmailCode) {
-            res.status(400).json({ sucess: false, error: 'Code does not match' })
-        } else {
-            User.findByIdAndUpdate(user._id, update)
-                .then(data => {
-                    if (!data) {
-                        res.status(404).send({
-                            message: `Cannot update User with id ${_id}. User not found!`
-                        });
-                    } else res.send({ message: "User was updated successfully." });
-                })
-                .catch(err => {
-                    res.status(500).send({
-                        message: "Error updating User with id " + _id
-                    });
-                });
+        }else{
+            reject("Token não encontrado")
         }
     })
 }
 
 exports.post = (req, res) => {
-    User.findOne({ email: req.body.email })
-        .then((user) => {
-            if (!user) {
-                res.json({ sucess: false, error: 'User does not exists' })
-            } else {
-                if (!bcrypt.compareSync(req.body.password, user.password)) {
-                    res.json({ sucess: false, error: 'Wrong password' })
-                } else {
-                    const token = JsonWebToken.sign({ _id: user._id, username: user.username }, SECRET_JWT_CODE)
-                    res.json({ sucess: true, token: token, user: user })
-                }
-            }
-        })
-        .catch((err) => {
-            res.json({ sucess: false, error: err })
-        })
-}
-
-exports.recoverSend = (req, res) => {
-    const code = Math.floor(Math.random() * (999_999 - 100_000 + 1)) + 100_000;
-    if (!req.body.email) {
-        res.json({ sucess: false, error: 'Parameters missing' })
-        return
-    }
-    User.findOne({ email: req.body.email })
-        .then((user) => {
-            if (!user) {
-                res.json({ sucess: false, error: 'User does not exists' })
-            } else {
-                const update = { passwordRecoveryCode: code };
-                User.findByIdAndUpdate(user._id, update, { useFindAndModify: false })
-                    .then(data => {
-                        if (!data) {
-                            res.status(404).send({
-                                message: `Cannot update User with id ${_id}. User not found!`
-                            });
-                        } else res.send({ message: "User was updated successfully." });
-                    })
-                    .catch(err => {
-                        res.status(500).send({
-                            message: "Error updating User with id " + _id
-                        });
-                    });
-                const title = 'Recover your password on Hotel4U'
-                const message = 'Use the following code on app: ' + code.toString();
-                this.sendMail(user.email, title, message);
-            }
-        })
-        .catch((err) => {
-            res.json({ sucess: false, error: err })
-        })
+    User.findOne({email:req.body.email}).then(user => {
+        if(!user){
+               return res.status(404).send("Utilizador não encontrado")
+        }else{
+         if(!bcrypt.compareSync(req.body.password, user.password)){
+             return res.status(401).send("Password incorreta")
+         }else{
+             const token = JsonWebToken.sign({_id:user._id, email:user.email},SECRET_JWT_CODE)
+             return res.status(200).send({token:token, user:user})
+         }
+        }
+     }).catch((err)=>{
+         return res.status(500).send(err)
+     })
 }

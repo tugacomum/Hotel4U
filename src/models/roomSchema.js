@@ -5,22 +5,25 @@ module.exports = mongoose => {
         type: String,
         unique: true
       },
-      _idHotel: {
+      hotel_id: {
         type: String
       },
-      roomQuantity: Number,
-      available: {
+      numero_quarto: Number,
+      disponivel: {
         type: Boolean
       },
-      type_room: {
+      tipo: {
         type: String,
         default: null
       },
-      description: {
+      descricao: {
         type: String,
         default: null
       },
-      price: {
+      preco: {
+        type: Number
+      },
+      andar: {
         type: Number
       },
       servicos: {

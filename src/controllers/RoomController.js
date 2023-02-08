@@ -16,12 +16,13 @@ exports.create = async (req, res) => {
 
     const room = new Room({
         _id: _id,
-        _idHotel: req.body._idHotel,
-        roomQuantity: req.body.roomQuantity,
-        state: req.body.state,
-        floor: req.body.floor,
-        type_room: req.body.type_room,
-        description: req.body.description
+        hotel_id: req.body.hotel_id,
+        andar: req.body.andar,
+        numero_quarto: req.body.numero_quarto,
+        tipo: req.body.tipo,
+        descricao: req.body.descricao,
+        disponivel: req.body.disponivel,
+        servicos: req.body.servicos
     });
 
     room.save(room).then(data => {

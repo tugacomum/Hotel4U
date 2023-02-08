@@ -22,12 +22,14 @@ exports.create = async (req, res) => {
 
   const user = new User({
     _id: _id,
-    username: req.body.username,
+    nome: req.body.nome,
+    apelido: req.body.apelido,
     email: req.body.email,
-    adress: req.body.adress,
-    phone_number: req.body.phone_number,
+    nif: req.body.nif,
+    genero: req.body.genero,
+    telefone: req.body.telefone,
     password: bcrypt.hashSync(req.body.password, 10),
-    birthDate: req.body.birthDate
+    data_nascimento: req.body.data_nascimento
   });
 
   user.save(user).then(user => {

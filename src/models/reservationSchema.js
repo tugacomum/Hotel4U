@@ -5,27 +5,30 @@ module.exports = mongoose => {
           type: String,
           unique: true
         },
-        _idUser: {
+        utilizador_id: {
           type: String,
         },
-        _idRoom: {
+        quarto_id: {
           type: String
         },
-        _idHotel: {
+        hotel_id: {
           type: String,
         },
-        price: Number,
-        dayIn: {
+        preco: Number,
+        data_entrada: {
             type: String,
         },
-        dayOut: {
+        data_saida: {
             type: String
         },
-        state: {
+        estado: {
           type: String
         },
-        count_ppl: {
+        numero_pessoas: {
           type: Number
+        },
+        observacoes: {
+          type: String
         }
     },
       { timestamps: true, versionKey: false }

@@ -5,16 +5,16 @@ module.exports = mongoose => {
           type: String,
           unique: true
         },
-        name: String,
-        location: String,
-        description: String,
-        image: {
+        nome: String,
+        endereco: String,
+        descricao: String,
+        imagens: {
           type: [String]
         },
-        available: {
+        disponivel: {
           type: Boolean
         },
-        services: {
+        servicos: {
           type: [String],
         }
     },

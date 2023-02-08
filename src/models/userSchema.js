@@ -1,40 +1,51 @@
 module.exports = mongoose => {
   var UserSchema = mongoose.Schema(
     {
-      _id: {
-        type: String,
-        unique: true
+      "_id": {
+        "type": String,
+        "required": true,
+        "unique": true
       },
-      username: {
-          type: String,
-          unique: true
+      "nome": {
+        "type": String,
+        "required": true
       },
-      adress: {
-        type: String,
-        default: 'Portugal'
+      "apelido": {
+        "type": String,
+        "required": true
       },
-      phone_number: {
-        type: Number,
-        default: null
+      "email": {
+        "type": String,
+        "required": true,
+        "unique": true
       },
-      nif: {
-        type: Number,
-        unique: true
+      "password": {
+        "type": String,
+        "required": true
       },
-      email: {
-          type: String,
-          unique: true
+      "telefone": {
+        "type": Number,
+        "required": true,
+        "unique": true
       },
-      password: String,
-      isAdmin: {
-          type: Boolean,
-          default: false
+      "data_nascimento": {
+        "type": String,
+        "required": true
       },
-      birthDate: {
-          type: Date,
-          default: null
+      "nif": {
+        "type": Number,
+        "required": true,
+        "unique": true
+      },
+      "genero": {
+        "type": String,
+        "required": true
+      },
+      "admin": {
+        "type": Boolean,
+        "required": true
       }
-  },
+    },
     { timestamps: true, versionKey: false }
   );
 
