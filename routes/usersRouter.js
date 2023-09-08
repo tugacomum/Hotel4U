@@ -52,25 +52,12 @@ router.get("/getallusers", async (req, res) => {
 router.post("/deleteuser", async (req, res) => {
   const userid = req.body.id;
   try {
-    const rooms = await Room.find({ "currentbookings.userId": userid });
-    for (let i = 0; i < rooms.length; i++) {
-      const room = rooms[i];
-      const bookings = room.currentbookings.filter(
-        (booking) => booking.userId.toString() === userid.toString()
-      );
-      console.log(bookings.length)
-      for (let j = 0; j < bookings.length; j++) {
-        console.log(bookings.length)
-        if (room.currentbookings[j].userId.toString() === userid.toString()) {
-            await room.currentbookings[j].pull({ userId: userid });
-        }
-        await room.save();
-      }
-    }
+    await Room.updateMany({ "currentbookings.userId": userid }, { $set: { "currentbookings": []}}, { "multi": true });
     await Booking.deleteMany({ userId: userid });
     await User.deleteOne({ _id: userid });
     res.send("User deleted successfully");
   } catch (error) {
+    console.log(error)
     return res.status(400).json({ message: error });
   }
 });
