@@ -3,9 +3,10 @@ const router = express.Router();
 
 const Room = require("../models/room");
 
-router.get("/getallrooms", async (req, res) => {
+router.post("/getallrooms", async (req, res) => {
+  const hotelid = req.body.id;
   try {
-    const rooms = await Room.find({});
+    const rooms = await Room.find({ hotelId: hotelid });
     res.send(rooms);
   } catch (error) {
     return res.status(400).json({ message: error });
@@ -35,8 +36,8 @@ router.post("/addroom", async (req, res) => {
 router.post("/deleteroom", async (req, res) => {
   const roomid = req.body._id;
   try {
-    const room = await Room.deleteOne({ _id: roomid });
-    // quando apagar o quarto, tem que desaparecer os bookings associados a esse quarto
+    await Room.deleteOne({ _id: roomid });
+    await Booking.deleteMany({ roomId: roomid });
     res.send("Room deleted successfully");
   } catch (error) {
     return res.status(400).json({ message: error });
@@ -51,8 +52,10 @@ router.post("/disableroom", async (req, res) => {
     });
     if (roomTemp.status === "disabled") {
       roomTemp.status = "active";
+      await Booking.updateMany({ roomId: roomid }, { status: "booked" });
     } else {
       roomTemp.status = "disabled";
+      await Booking.updateMany({ roomId: roomid }, { status: "cancelled" });
     }
     await roomTemp.save();
     res.send("Room status changed successfully");
@@ -61,6 +64,24 @@ router.post("/disableroom", async (req, res) => {
   }
 });
 
-// edit room
+router.post('/editroom', async (req, res) => {
+  const { room } = req.body;
+  try {
+    console.log(room)
+    await Room.updateOne({_id: room.id},{
+      name: room.name,
+      maxcount: room.maxCount,
+      phonenumber: room.phoneNumber,
+      rentperday: room.rentPerDay,
+      imageurls: [room.imageUrl1, room.imageUrl2, room.imageUrl3],
+      type: room.type,
+      description: room.description,
+      services: room.services,
+    })
+    res.send("Room updated successfully");
+  } catch (error) {
+    return res.status(400).json({ message: error });
+  }
+});
 
 module.exports = router;

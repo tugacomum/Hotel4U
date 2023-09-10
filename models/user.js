@@ -14,6 +14,14 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  address: {
+    type: String,
+    required: true,
+  },
+  taxpayerNumber: {
+    type: Number,
+    required: true
+  }, 
   isAdmin: {
     type: Boolean,
     default: false,
